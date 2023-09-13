@@ -16,7 +16,9 @@ import Data.List
 -- Hint! pattern matching is your friend.
 
 binomial :: Integer -> Integer -> Integer
-binomial = todo
+binomial n 0 = 1
+binomial 0 k = if k > 0 then 0 else undefined
+binomial n k = binomial (n-1) k + binomial (n-1) (k-1)
 
 ------------------------------------------------------------------------------
 -- Ex 2: implement the odd factorial function. Odd factorial is like
@@ -27,7 +29,10 @@ binomial = todo
 --   oddFactorial 6 ==> 5*3*1 ==> 15
 
 oddFactorial :: Integer -> Integer
-oddFactorial = todo
+oddFactorial n
+    | n < 0 = 1
+    | even n = oddFactorial (n-1)
+    | odd n = n * oddFactorial (n-2)
 
 ------------------------------------------------------------------------------
 -- Ex 3: implement the Euclidean Algorithm for finding the greatest
@@ -59,7 +64,7 @@ oddFactorial = todo
 -- * https://en.wikipedia.org/wiki/Euclidean_algorithm
 
 myGcd :: Integer -> Integer -> Integer
-myGcd = todo
+myGcd a b = if b == 0 then a else myGcd b (a `rem` b)
 
 ------------------------------------------------------------------------------
 -- Ex 4: Implement the function leftpad which adds space characters
@@ -74,8 +79,17 @@ myGcd = todo
 -- * you can combine strings with the ++ operator.
 -- * you can compute the length of a string with the length function
 
+leftpad' :: String -> Int -> String
+leftpad' s n = if n == 0 
+               then s 
+               else leftpad' (" " ++ s) (n - 1)
+
 leftpad :: String -> Int -> String
-leftpad = todo
+leftpad s n = if n - 1 == 0 || n == length s
+                then s 
+              else if n > length s 
+                then leftpad' (" " ++ s) (n - length s - 1)
+              else leftpad' (" " ++ s) (length s - n - 1)
 
 ------------------------------------------------------------------------------
 -- Ex 5: let's make a countdown for a rocket! Given a number, you
@@ -90,8 +104,13 @@ leftpad = todo
 -- * you can use the show function to convert a number into a string
 -- * you'll probably need a recursive helper function
 
+countdown' :: Integer -> String
+countdown' n = if n == 0
+                then " Liftoff!"
+               else show n ++ "... " ++ countdown'(n-1)
+
 countdown :: Integer -> String
-countdown = todo
+countdown n = "Ready! " ++ show n ++ "... " ++ countdown'(n-1)
 
 ------------------------------------------------------------------------------
 -- Ex 6: implement the function smallestDivisor that returns the
@@ -108,9 +127,16 @@ countdown = todo
 --
 -- Hint: remember the mod function!
 
-smallestDivisor :: Integer -> Integer
-smallestDivisor = todo
+smallestDivisor' :: Integer -> Integer -> Integer
+smallestDivisor' n d = if (n `rem` d) == 0 
+                       then d 
+                       else smallestDivisor' n (d+1)
 
+smallestDivisor :: Integer -> Integer
+smallestDivisor n = if (n `rem` 2) /= 0 
+                    then smallestDivisor' n 3 
+                    else 2
+                    
 ------------------------------------------------------------------------------
 -- Ex 7: implement a function isPrime that checks if the given number
 -- is a prime number. Use the function smallestDivisor.
@@ -118,7 +144,7 @@ smallestDivisor = todo
 -- Ps. 0 and 1 are not prime numbers
 
 isPrime :: Integer -> Bool
-isPrime = todo
+isPrime n = if n == 1 then False else if smallestDivisor n == n then True else False
 
 ------------------------------------------------------------------------------
 -- Ex 8: implement a function biggestPrimeAtMost that returns the
@@ -132,5 +158,16 @@ isPrime = todo
 --   biggestPrimeAtMost 3 ==> 3
 --   biggestPrimeAtMost 10 ==> 7
 
+biggestPrimeAtMost' :: Integer -> Integer -> Integer -> Integer
+biggestPrimeAtMost' n p d = if n == p 
+                                then do 
+                                    if isPrime n then n
+                                    else d
+                            else if isPrime p 
+                                then biggestPrimeAtMost' n (p+1) p
+                            else biggestPrimeAtMost' n (p+1) d
+
 biggestPrimeAtMost :: Integer -> Integer
-biggestPrimeAtMost = todo
+biggestPrimeAtMost n = if n == 2 || n == 3 
+                       then n 
+                       else biggestPrimeAtMost' n 2 2
