@@ -282,7 +282,7 @@ multiCompose fs s = multiCompose (init fs) ((last fs) s)
 --   multiApp id [head, (!!2), last] "axbxc" ==> ['a','b','c'] i.e. "abc"
 --   multiApp sum [head, (!!2), last] [1,9,2,9,3] ==> 6
 
-multiApp :: (a -> a) -> [a -> a] -> a -> a
+multiApp :: ([a] -> t1) -> [t2 -> a] -> t2 -> t1
 multiApp func listExpr el = func [expr el | expr <- listExpr]
 
 ------------------------------------------------------------------------------
@@ -318,4 +318,15 @@ multiApp func listExpr el = func [expr el | expr <- listExpr]
 -- function, the surprise won't work. See section 3.8 in the material.
 
 interpreter :: [String] -> [String]
-interpreter commands = todo
+interpreter xs = interpretCommands xs 0 0
+
+interpretCommands :: [String] -> Int -> Int -> [String]
+interpretCommands [] x y = []
+interpretCommands (cmd:cmds) x y = case cmd of
+    "up" -> interpretCommands cmds x (y + 1)
+    "down" -> interpretCommands cmds x (y - 1)
+    "left" -> interpretCommands cmds (x - 1) y
+    "right" -> interpretCommands cmds (x + 1) y
+    "printX" -> show x : interpretCommands cmds x y
+    "printY" -> show y : interpretCommands cmds x y
+    _ -> interpretCommands cmds x y
